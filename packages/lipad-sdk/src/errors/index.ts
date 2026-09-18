@@ -1,0 +1,6 @@
+export { LipadError } from './base'
+export type { LipadErrorCode } from './base'
+export { ConfigurationError } from './config-error'
+export { AuthError } from './auth-error'
+export { ProviderError } from './provider-error'
+export { ProviderCapabilityError } from './capability-error'

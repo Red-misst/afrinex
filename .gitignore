@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.lipad/
+*.pem
+.env
+*.env.local
+.turbo/
+coverage/
+*.tsbuildinfo

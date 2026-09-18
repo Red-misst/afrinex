@@ -1,0 +1,8 @@
+{
+  "transactionReference": "FT19191234567890",
+  "amount": 500,
+  "status": "SUCCESS",
+  "sourceAccountNumber": "0000000001",
+  "destinationAccountNumber": "254712345678",
+  "transactionDate": "2024-01-15T10:30:00Z"
+}

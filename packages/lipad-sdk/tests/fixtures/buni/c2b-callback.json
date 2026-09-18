@@ -1,0 +1,8 @@
+{
+  "TransactionType": "Pay Bill",
+  "TransID": "RKTQDM7W6S",
+  "TransAmount": "100.00",
+  "MSISDN": "254708374149",
+  "BillRefNumber": "order-001",
+  "TransTime": "20240115103000"
+}

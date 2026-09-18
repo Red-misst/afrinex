@@ -1,0 +1,10 @@
+{
+  "Body": {
+    "stkCallback": {
+      "MerchantRequestID": "29115-34620561-2",
+      "CheckoutRequestID": "ws_CO_191220191020363926",
+      "ResultCode": 1032,
+      "ResultDesc": "Request cancelled by user"
+    }
+  }
+}
