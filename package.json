@@ -1,7 +1,10 @@
 {
   "name": "lipad-monorepo",
   "private": true,
-  "workspaces": ["packages/*", "examples/*"],
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "test": "turbo run test",

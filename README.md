@@ -2,7 +2,7 @@
 
 > One SDK. Two providers. M-Pesa and KCB payments for Kenya — done right.
 
-[![npm version](https://img.shields.io/npm/v/lipad)](https://www.npmjs.com/package/lipad)
+[![npm version](https://img.shields.io/npm/v/afrinex)](https://www.npmjs.com/package/afrinex)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
@@ -51,15 +51,15 @@ You write your payment logic once. Lipad handles the rest.
 ## Installation
 
 ```bash
-npm install lipad
+npm install afrinex
 ```
 
 ```bash
-yarn add lipad
+yarn add afrinex
 ```
 
 ```bash
-pnpm add lipad
+pnpm add afrinex
 ```
 
 ---
@@ -118,7 +118,7 @@ npm install dotenv
 
 ```typescript
 import 'dotenv/config'
-import { createClient } from 'lipad'
+import { createClient } from 'afrinex'
 
 // Create the client — only the providers you configure are loaded
 const pay = createClient({
@@ -154,7 +154,7 @@ That's it. You just sent an STK push to a phone.
 Creates a Lipad client. Only providers you pass config for are instantiated.
 
 ```typescript
-import { createClient } from 'lipad'
+import { createClient } from 'afrinex'
 
 const pay = createClient({
   env: 'sandbox',             // Required: 'sandbox' | 'production'
@@ -313,7 +313,7 @@ You can configure both providers in a single client:
 
 ```typescript
 import 'dotenv/config'
-import { createClient } from 'lipad'
+import { createClient } from 'afrinex'
 
 const pay = createClient({
   env: 'sandbox',
@@ -371,7 +371,7 @@ cp .env.example .env
 Lipad throws typed errors so you can handle failures precisely:
 
 ```typescript
-import { createClient, ConfigurationError, AuthError, ProviderError } from 'lipad'
+import { createClient, ConfigurationError, AuthError, ProviderError } from 'afrinex'
 
 try {
   const result = await pay.daraja!.stkPush({
@@ -434,7 +434,7 @@ import type {
   WebhookEvent,         // 'payment.success' | 'payment.failed' | 'payment.pending'
   ProviderName,         // 'daraja' | 'buni'
   Environment,          // 'sandbox' | 'production'
-} from 'lipad'
+} from 'afrinex'
 ```
 
 ---
@@ -498,7 +498,7 @@ Here's a complete payment flow in an Express app:
 ```typescript
 import 'dotenv/config'
 import express from 'express'
-import { createClient, ProviderError } from 'lipad'
+import { createClient, ProviderError } from 'afrinex'
 
 const app = express()
 app.use(express.json())
