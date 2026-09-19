@@ -2,10 +2,8 @@ import type { LipadConfig } from './types/config'
 import type { LipadClient } from './types/client'
 import { resolveConfig } from './core/config'
 import { DarajaProvider } from './providers/daraja'
-import { JengaProvider } from './providers/jenga'
 import { BuniProvider } from './providers/buni'
 import { createDarajaAuth } from './providers/daraja/auth'
-import { createJengaAuth } from './providers/jenga/auth'
 import { createBuniAuth } from './providers/buni/auth'
 import { HttpClient } from './core/http-client'
 
@@ -34,12 +32,6 @@ export function createClient(config: LipadConfig): LipadClient {
     const http = new HttpClient(resolved.daraja.baseUrl)
     const auth = createDarajaAuth(resolved.daraja, http)
     client.daraja = new DarajaProvider(resolved.daraja, resolved.env, auth)
-  }
-
-  if (resolved.jenga !== undefined) {
-    const http = new HttpClient(resolved.jenga.baseUrl)
-    const auth = createJengaAuth(resolved.jenga, resolved.env, http)
-    client.jenga = new JengaProvider(resolved.jenga, resolved.env, auth)
   }
 
   if (resolved.buni !== undefined) {

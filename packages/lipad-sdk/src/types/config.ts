@@ -7,13 +7,6 @@ export interface DarajaConfig {
   passkey: string
 }
 
-export interface JengaConfig {
-  apiKey: string
-  merchantCode: string
-  consumerSecret: string
-  privateKey?: string // optional in sandbox — auto-generated if absent
-}
-
 export interface BuniConfig {
   consumerKey: string
   consumerSecret: string
@@ -25,16 +18,11 @@ export interface LipadConfig {
   callbackUrl?: string
   default?: ProviderName
   daraja?: DarajaConfig
-  jenga?: JengaConfig
   buni?: BuniConfig
 }
 
 // Internal resolved config — all fields guaranteed present after resolveConfig()
 export interface ResolvedDarajaConfig extends DarajaConfig {
-  baseUrl: string
-}
-
-export interface ResolvedJengaConfig extends JengaConfig {
   baseUrl: string
 }
 
@@ -47,6 +35,5 @@ export interface ResolvedLipadConfig {
   callbackUrl?: string
   default?: ProviderName
   daraja?: ResolvedDarajaConfig
-  jenga?: ResolvedJengaConfig
   buni?: ResolvedBuniConfig
 }

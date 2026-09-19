@@ -83,12 +83,6 @@ describe('resolveCallbackUrl', () => {
       )
     })
 
-    it('appends /jenga for jenga provider', () => {
-      expect(resolveCallbackUrl({ global: base, provider: 'jenga' })).toBe(
-        'https://myapp.com/webhooks/jenga'
-      )
-    })
-
     it('appends /buni for buni provider', () => {
       expect(resolveCallbackUrl({ global: base, provider: 'buni' })).toBe(
         'https://myapp.com/webhooks/buni'

@@ -5,7 +5,6 @@ export { createClient } from './client'
 export type {
   LipadConfig,
   DarajaConfig,
-  JengaConfig,
   BuniConfig,
 } from './types/config'
 
@@ -39,4 +38,4 @@ export { ProviderError } from './errors/provider-error'
 export { ProviderCapabilityError } from './errors/capability-error'
 
 // Internal modules intentionally NOT exported:
-// TokenManager, SignatureBuilder, HttpClient, BaseProvider
+// TokenManager, HttpClient, BaseProvider

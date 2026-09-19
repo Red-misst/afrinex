@@ -3,11 +3,9 @@
 export type { LipadClient } from './client'
 export type {
   DarajaConfig,
-  JengaConfig,
   BuniConfig,
   LipadConfig,
   ResolvedDarajaConfig,
-  ResolvedJengaConfig,
   ResolvedBuniConfig,
   ResolvedLipadConfig,
 } from './config'

@@ -1,7 +1,6 @@
 import { ConfigurationError } from '../errors/config-error'
 import type { LipadConfig, ResolvedLipadConfig } from '../types/config'
 import { DARAJA_URLS } from '../providers/daraja/constants'
-import { JENGA_URLS } from '../providers/jenga/constants'
 import { BUNI_URLS } from '../providers/buni/constants'
 
 /**
@@ -59,46 +58,6 @@ export function resolveConfig(input: LipadConfig): ResolvedLipadConfig {
       shortcode,
       passkey,
       baseUrl: DARAJA_URLS[input.env],
-    }
-  }
-
-  // ── Jenga ───────────────────────────────────────────────────────────────────
-  if (input.jenga !== undefined) {
-    const fromEnv: string[] = []
-
-    const apiKey = resolveCredential(
-      input.jenga.apiKey,
-      'LIPAD_JENGA_API_KEY',
-      'Jenga apiKey is required. Pass it to createClient() or set LIPAD_JENGA_API_KEY.',
-      fromEnv,
-    )
-    const merchantCode = resolveCredential(
-      input.jenga.merchantCode,
-      'LIPAD_JENGA_MERCHANT_CODE',
-      'Jenga merchantCode is required. Pass it to createClient() or set LIPAD_JENGA_MERCHANT_CODE.',
-      fromEnv,
-    )
-    const consumerSecret = resolveCredential(
-      input.jenga.consumerSecret,
-      'LIPAD_JENGA_CONSUMER_SECRET',
-      'Jenga consumerSecret is required. Pass it to createClient() or set LIPAD_JENGA_CONSUMER_SECRET.',
-      fromEnv,
-    )
-
-    // privateKey is optional — Jenga sandbox can auto-generate it
-    const privateKey =
-      input.jenga.privateKey ?? process.env['LIPAD_JENGA_PRIVATE_KEY']
-
-    if (input.env === 'sandbox' && fromEnv.length > 0) {
-      console.warn('[lipad] sandbox · jenga credentials resolved from environment')
-    }
-
-    resolved.jenga = {
-      apiKey,
-      merchantCode,
-      consumerSecret,
-      ...(privateKey !== undefined ? { privateKey } : {}),
-      baseUrl: JENGA_URLS[input.env],
     }
   }
 

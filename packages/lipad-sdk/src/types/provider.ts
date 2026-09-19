@@ -1,9 +1,9 @@
-export type ProviderName = 'daraja' | 'jenga' | 'buni'
+export type ProviderName = 'daraja' | 'buni'
 
 export type Environment = 'sandbox' | 'production'
 
 export interface AuthContext {
-  signingPayload?: string // only consumed by Jenga's SignatureBuilder
+  // Reserved for future provider-specific signing context
 }
 
 export interface AuthStrategy {

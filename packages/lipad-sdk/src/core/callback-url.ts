@@ -9,7 +9,6 @@ interface ResolveCallbackUrlOpts {
 
 const PROVIDER_SLUGS: Record<ProviderName, string> = {
   daraja: '/daraja',
-  jenga: '/jenga',
   buni: '/buni',
 }
 
@@ -22,7 +21,7 @@ const PROVIDER_SLUGS: Record<ProviderName, string> = {
  *   3. LIPAD_CALLBACK_URL environment variable
  *   4. throws ConfigurationError
  *
- * Automatically appends the provider slug (/daraja, /jenga, /buni).
+ * Automatically appends the provider slug (/daraja, /buni).
  * Strips trailing slashes from the base URL before appending.
  */
 export function resolveCallbackUrl(opts: ResolveCallbackUrlOpts): string {
