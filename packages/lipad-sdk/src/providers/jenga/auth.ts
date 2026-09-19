@@ -6,31 +6,57 @@ import { ConfigurationError } from '../../errors/config-error'
 import type { ResolvedJengaConfig } from '../../types/config'
 import type { AuthStrategy, AuthContext, Environment } from '../../types/provider'
 
+import { TokenManager } from '../../core/token-manager'
+import type { HttpClient } from '../../core/http-client'
+import { JENGA_PATHS } from './constants'
+
 const SANDBOX_KEY_PATH = path.join(process.cwd(), '.lipad', 'jenga_sandbox.pem')
 
-/**
- * Creates the Jenga RSA-SHA256 AuthStrategy.
- *
- * Sandbox: auto-generates a 2048-bit RSA keypair if no privateKey is provided.
- *   - Saves private key to .lipad/jenga_sandbox.pem
- *   - Prints public key to console for developer portal registration
- *
- * Production: privateKey is required (PEM string or base64-encoded PEM).
- */
+interface JengaAuthResponse {
+  accessToken: string
+  expiresIn: string
+}
+
 export function createJengaAuth(
   config: ResolvedJengaConfig,
   env: Environment,
+  http: HttpClient,
 ): AuthStrategy {
   const privateKeyPem = resolvePrivateKey(config, env)
 
   const signatureBuilder = new SignatureBuilder({
     privateKeyPem,
-    apiKey: config.apiKey,
+  })
+
+  const tokenManager = new TokenManager({
+    provider: 'jenga',
+    fetchToken: async () => {
+      const response = await http.post<JengaAuthResponse>(
+        JENGA_PATHS.auth,
+        {
+          merchantCode: config.merchantCode,
+          consumerSecret: config.consumerSecret,
+        },
+        { 'Content-Type': 'application/json', 'Api-Key': config.apiKey }
+      )
+      return {
+        token: response.accessToken,
+        expiresIn: Number(response.expiresIn) || 3600,
+      }
+    },
   })
 
   return {
     async headers(context?: AuthContext): Promise<Record<string, string>> {
-      return signatureBuilder.headers(context?.signingPayload ?? '')
+      const token = await tokenManager.getToken()
+      const signature = signatureBuilder.sign(context?.signingPayload ?? '')
+
+      return {
+        'Authorization': `Bearer ${token}`,
+        'signature': signature,
+        'Api-Key': config.apiKey,
+        'Content-Type': 'application/json',
+      }
     },
   }
 }

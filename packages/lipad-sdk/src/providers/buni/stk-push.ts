@@ -7,10 +7,16 @@ import type { StkPushRequest, StkPushResponse } from '../../types'
 import type { HttpClient } from '../../core/http-client'
 
 interface BuniStkPushRawResponse {
-  ResponseCode: string
-  ResponseDescription: string
-  CheckoutRequestID?: string
-  MerchantRequestID?: string
+  header: {
+    statusCode: string
+    statusDescription: string
+  }
+  response: {
+    ResponseCode: string
+    ResponseDescription: string
+    CheckoutRequestID?: string
+    MerchantRequestID?: string
+  }
 }
 
 export async function stkPush(
@@ -25,27 +31,42 @@ export async function stkPush(
     provider: 'buni',
   })
 
-  const headers = await auth.headers()
+  const authHeaders = await auth.headers()
+  
+  const messageId = `${Date.now()}_KCBOrg_${Math.floor(Math.random() * 100000000)}`
 
-  const body = {
-    OrgShortCode: config.orgShortCode,
-    CommandID: 'CustomerPayBillOnline',
-    Amount: req.amount,
-    Msisdn: phone,
-    BillRefNumber: req.reference,
-    CallBackURL: callbackUrl,
+  const headers = {
+    ...authHeaders,
+    'accept': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'routeCode': '207',
+    'operation': 'STKPush',
+    'messageId': messageId,
   }
 
-  const response = await http.post<BuniStkPushRawResponse>(
+  const body = {
+    phoneNumber: phone,
+    amount: String(req.amount),
+    invoiceNumber: req.reference,
+    sharedShortCode: true,
+    orgShortCode: "",
+    orgPassKey: "",
+    callbackUrl: callbackUrl,
+    transactionDescription: req.description || 'Payment',
+  }
+
+  const raw = await http.post<BuniStkPushRawResponse>(
     BUNI_PATHS.stkPush,
     body,
     headers,
   )
 
+  const res = raw.response || {}
+
   return {
-    success: response.ResponseCode === '0',
-    transactionId: response.CheckoutRequestID ?? response.MerchantRequestID ?? '',
-    message: response.ResponseDescription,
-    raw: response,
+    success: res.ResponseCode === '0' || raw.header?.statusCode === '0',
+    transactionId: res.CheckoutRequestID ?? res.MerchantRequestID ?? '',
+    message: res.ResponseDescription ?? raw.header?.statusDescription ?? '',
+    raw,
   }
 }

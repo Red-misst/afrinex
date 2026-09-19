@@ -4,7 +4,8 @@ export const JENGA_URLS = {
 } as const
 
 export const JENGA_PATHS = {
-  stkPush: '/transaction/v3/to-mobile',
-  transfer: '/transaction/v3/to-mobile',
-  query: '/transaction/v3/details',
+  auth: '/authentication/api/v3/authenticate/merchant',
+  stkPush: '/v3-apis/payment-api/v3.0/stkussdpush/initiate',
+  transfer: '/v3-apis/transaction-api/v3.0/remittance/sendmobile',
+  query: '/v3-apis/transaction-api/v3.0/transactions/details',
 } as const

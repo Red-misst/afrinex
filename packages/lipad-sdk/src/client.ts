@@ -37,7 +37,8 @@ export function createClient(config: LipadConfig): LipadClient {
   }
 
   if (resolved.jenga !== undefined) {
-    const auth = createJengaAuth(resolved.jenga, resolved.env)
+    const http = new HttpClient(resolved.jenga.baseUrl)
+    const auth = createJengaAuth(resolved.jenga, resolved.env, http)
     client.jenga = new JengaProvider(resolved.jenga, resolved.env, auth)
   }
 

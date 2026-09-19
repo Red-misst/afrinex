@@ -29,7 +29,10 @@ export async function toPhone(
     provider: 'jenga',
   })
 
-  const signingPayload = config.merchantCode + req.amount.toString() + req.reference
+  const dateStr = new Date().toISOString().split('T')[0]
+  const walletName = phone.startsWith('25476') ? 'Equitel' : 'Mpesa'
+
+  const signingPayload = `${req.amount}KES${req.reference}${config.merchantCode}`
   const headers = await auth.headers({ signingPayload })
 
   const body = {
@@ -43,12 +46,14 @@ export async function toPhone(
       countryCode: 'KE',
       name: 'Recipient',
       mobileNumber: phone,
+      walletName: walletName,
     },
     transfer: {
-      type: 'MobileMoney',
-      amount: req.amount,
+      type: 'MobileWallet',
+      amount: String(req.amount),
       currencyCode: 'KES',
       reference: req.reference,
+      date: dateStr,
       description: req.remarks ?? req.reference,
       callbackUrl,
     },

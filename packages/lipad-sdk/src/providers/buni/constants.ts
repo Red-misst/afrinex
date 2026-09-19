@@ -5,7 +5,7 @@ export const BUNI_URLS = {
 
 export const BUNI_PATHS = {
   auth: '/token',
-  stkPush: '/mm/api/request/1.0.0/c2b/express-checkout',
+  stkPush: '/mm/api/request/1.0.0/stkpush',
   transfer: '/mm/api/request/1.0.0/b2c',
   query: '/mm/api/request/1.0.0/reconciliation',
 } as const

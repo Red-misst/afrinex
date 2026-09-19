@@ -30,28 +30,28 @@ export async function stkPush(
     provider: 'jenga',
   })
 
-  const signingPayload = config.merchantCode + req.amount.toString() + req.reference
+  const telco = phone.startsWith('25476') ? 'Equitel' : 'Safaricom'
+  const dateStr = new Date().toISOString().split('T')[0] // YYYY-MM-DD
+  const currency = 'KES'
+
+  const signingPayload = `${config.merchantCode}${req.reference}${phone}${telco}${req.amount}${currency}`
   const headers = await auth.headers({ signingPayload })
 
   const body = {
-    source: {
+    merchant: {
       countryCode: 'KE',
-      name: 'merchant',
       accountNumber: config.merchantCode,
+      name: 'merchant',
     },
-    destination: {
-      type: 'mobile',
-      countryCode: 'KE',
-      name: 'Customer',
+    payment: {
+      ref: req.reference,
       mobileNumber: phone,
-    },
-    transfer: {
-      type: 'MobileMoney',
-      amount: req.amount,
-      currencyCode: 'KES',
-      reference: req.reference,
-      description: req.description ?? req.reference,
-      callbackUrl,
+      telco: telco,
+      amount: String(req.amount),
+      currency: currency,
+      date: dateStr,
+      callBackUrl: callbackUrl,
+      pushType: 'STK',
     },
   }
 

@@ -8,23 +8,15 @@ import forge from 'node-forge'
  */
 export class SignatureBuilder {
   private privateKeyPem: string
-  private apiKey: string
 
-  constructor(opts: { privateKeyPem: string; apiKey: string }) {
+  constructor(opts: { privateKeyPem: string }) {
     this.privateKeyPem = opts.privateKeyPem
-    this.apiKey = opts.apiKey
   }
 
-  headers(signingPayload: string): Record<string, string> {
+  sign(signingPayload: string): string {
     const privateKey = forge.pki.privateKeyFromPem(this.privateKeyPem)
     const md = forge.md.sha256.create()
     md.update(signingPayload, 'utf8')
-    const signature = forge.util.encode64(privateKey.sign(md))
-
-    return {
-      'Api-Key': this.apiKey,
-      'Authorization': `Bearer ${signature}`,
-      'Content-Type': 'application/json',
-    }
+    return forge.util.encode64(privateKey.sign(md))
   }
 }
