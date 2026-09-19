@@ -1,4 +1,4 @@
-# lipad
+# afrinex
 
 > One SDK. Two providers. M-Pesa and KCB payments for Kenya — done right.
 
@@ -8,7 +8,7 @@
 
 ---
 
-## What is Lipad?
+## What is afrinex?
 
 If you've ever tried to integrate M-Pesa (Safaricom Daraja) or KCB (Buni) payments in a Node.js app, you know the pain:
 
@@ -17,7 +17,7 @@ If you've ever tried to integrate M-Pesa (Safaricom Daraja) or KCB (Buni) paymen
 - Webhooks are formatted differently per provider
 - You have to write and maintain separate integration code for each one
 
-**Lipad solves this.** It wraps both providers behind a single, consistent interface:
+**afrinex solves this.** It wraps both providers behind a single, consistent interface:
 
 - Same method names across providers (`stkPush`, `transfers.toPhone`, `payments.query`)
 - Same response shape regardless of which provider you use
@@ -25,7 +25,7 @@ If you've ever tried to integrate M-Pesa (Safaricom Daraja) or KCB (Buni) paymen
 - Full TypeScript support with autocomplete and type safety
 - Environment variable fallback so credentials stay out of your code
 
-You write your payment logic once. Lipad handles the rest.
+You write your payment logic once. afrinex handles the rest.
 
 ---
 
@@ -151,7 +151,7 @@ That's it. You just sent an STK push to a phone.
 
 ### `createClient(config)`
 
-Creates a Lipad client. Only providers you pass config for are instantiated.
+Creates a afrinex client. Only providers you pass config for are instantiated.
 
 ```typescript
 import { createClient } from 'afrinex'
@@ -368,7 +368,7 @@ cp .env.example .env
 
 ## Error Handling
 
-Lipad throws typed errors so you can handle failures precisely:
+afrinex throws typed errors so you can handle failures precisely:
 
 ```typescript
 import { createClient, ConfigurationError, AuthError, ProviderError } from 'afrinex'
@@ -417,7 +417,7 @@ try {
 
 ## TypeScript Types
 
-Lipad is written in TypeScript. All types are exported and available:
+afrinex is written in TypeScript. All types are exported and available:
 
 ```typescript
 import type {
@@ -566,17 +566,17 @@ app.listen(3000, () => console.log('Server running on port 3000'))
 To publish a new version to npm:
 
 ```bash
-# 1. Bump the version in packages/lipad-sdk/package.json
+# 1. Bump the version in packages/afrinex-sdk/package.json
 npm version patch   # 0.1.0 → 0.1.1
 npm version minor   # 0.1.0 → 0.2.0
 npm version major   # 0.1.0 → 1.0.0
 
 # 2. Build and publish (prepublishOnly runs lint + build automatically)
-cd packages/lipad-sdk
+cd packages/afrinex-sdk
 npm publish
 
 # Or from the root if using a workspace
-npm publish -w packages/lipad-sdk
+npm publish -w packages/afrinex-sdk
 ```
 
 ---
@@ -585,23 +585,23 @@ npm publish -w packages/lipad-sdk
 
 ```bash
 # Clone the repo
-git clone https://github.com/Red-misst/lipad.git
-cd lipad
+git clone https://github.com/Red-misst/afrinex.git
+cd afrinex
 
 # Install dependencies
 npm install
 
 # Build the SDK
-npm run build -w packages/lipad-sdk
+npm run build -w packages/afrinex-sdk
 
 # Run unit tests
-npm run test:unit -w packages/lipad-sdk
+npm run test:unit -w packages/afrinex-sdk
 
 # Run integration tests (requires real .env credentials)
-npm run test:integration -w packages/lipad-sdk
+npm run test:integration -w packages/afrinex-sdk
 
 # Type-check only (no build output)
-npm run lint -w packages/lipad-sdk
+npm run lint -w packages/afrinex-sdk
 ```
 
 ---
