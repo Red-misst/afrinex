@@ -3,17 +3,17 @@ import { resolveCallbackUrl } from '../../../src/core/callback-url'
 import { ConfigurationError } from '../../../src/errors/config-error'
 
 describe('resolveCallbackUrl', () => {
-  const originalEnv = process.env['LIPAD_CALLBACK_URL']
+  const originalEnv = process.env['AFRINEX_CALLBACK_URL']
 
   beforeEach(() => {
-    delete process.env['LIPAD_CALLBACK_URL']
+    delete process.env['AFRINEX_CALLBACK_URL']
   })
 
   afterEach(() => {
     if (originalEnv !== undefined) {
-      process.env['LIPAD_CALLBACK_URL'] = originalEnv
+      process.env['AFRINEX_CALLBACK_URL'] = originalEnv
     } else {
-      delete process.env['LIPAD_CALLBACK_URL']
+      delete process.env['AFRINEX_CALLBACK_URL']
     }
   })
 
@@ -36,7 +36,7 @@ describe('resolveCallbackUrl', () => {
     })
 
     it('falls back to env var when no request or global URL', () => {
-      process.env['LIPAD_CALLBACK_URL'] = 'https://env.com/hooks'
+      process.env['AFRINEX_CALLBACK_URL'] = 'https://env.com/hooks'
       const result = resolveCallbackUrl({ provider: 'daraja' })
       expect(result).toBe('https://env.com/hooks/daraja')
     })

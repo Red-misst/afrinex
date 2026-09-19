@@ -99,13 +99,13 @@ Create a `.env` file in your project root:
 
 ```bash
 # Daraja (Safaricom M-Pesa)
-LIPAD_DARAJA_CONSUMER_KEY=your_consumer_key_here
-LIPAD_DARAJA_CONSUMER_SECRET=your_consumer_secret_here
-LIPAD_DARAJA_SHORTCODE=174379
-LIPAD_DARAJA_PASSKEY=bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
+AFRINEX_DARAJA_CONSUMER_KEY=your_consumer_key_here
+AFRINEX_DARAJA_CONSUMER_SECRET=your_consumer_secret_here
+AFRINEX_DARAJA_SHORTCODE=174379
+AFRINEX_DARAJA_PASSKEY=bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
 
 # Your callback URL (where M-Pesa sends payment confirmations)
-LIPAD_CALLBACK_URL=https://your-domain.com/webhooks
+AFRINEX_CALLBACK_URL=https://your-domain.com/webhooks
 ```
 
 ### Step 2 — Install dotenv (if you haven't already)
@@ -123,12 +123,12 @@ import { createClient } from 'afrinex'
 // Create the client — only the providers you configure are loaded
 const pay = createClient({
   env: 'sandbox',         // Use 'production' when you go live
-  callbackUrl: process.env.LIPAD_CALLBACK_URL,
+  callbackUrl: process.env.AFRINEX_CALLBACK_URL,
   daraja: {
-    consumerKey:    process.env.LIPAD_DARAJA_CONSUMER_KEY!,
-    consumerSecret: process.env.LIPAD_DARAJA_CONSUMER_SECRET!,
-    shortcode:      process.env.LIPAD_DARAJA_SHORTCODE!,
-    passkey:        process.env.LIPAD_DARAJA_PASSKEY!,
+    consumerKey:    process.env.AFRINEX_DARAJA_CONSUMER_KEY!,
+    consumerSecret: process.env.AFRINEX_DARAJA_CONSUMER_SECRET!,
+    shortcode:      process.env.AFRINEX_DARAJA_SHORTCODE!,
+    passkey:        process.env.AFRINEX_DARAJA_PASSKEY!,
   },
 })
 
@@ -244,9 +244,9 @@ const pay = createClient({
   env: 'sandbox',
   callbackUrl: 'https://your-domain.com/webhooks',
   buni: {
-    consumerKey:    process.env.LIPAD_BUNI_CONSUMER_KEY!,
-    consumerSecret: process.env.LIPAD_BUNI_CONSUMER_SECRET!,
-    orgShortCode:   process.env.LIPAD_BUNI_ORG_SHORT_CODE!,
+    consumerKey:    process.env.AFRINEX_BUNI_CONSUMER_KEY!,
+    consumerSecret: process.env.AFRINEX_BUNI_CONSUMER_SECRET!,
+    orgShortCode:   process.env.AFRINEX_BUNI_ORG_SHORT_CODE!,
   },
 })
 
@@ -317,17 +317,17 @@ import { createClient } from 'afrinex'
 
 const pay = createClient({
   env: 'sandbox',
-  callbackUrl: process.env.LIPAD_CALLBACK_URL,
+  callbackUrl: process.env.AFRINEX_CALLBACK_URL,
   daraja: {
-    consumerKey:    process.env.LIPAD_DARAJA_CONSUMER_KEY!,
-    consumerSecret: process.env.LIPAD_DARAJA_CONSUMER_SECRET!,
-    shortcode:      process.env.LIPAD_DARAJA_SHORTCODE!,
-    passkey:        process.env.LIPAD_DARAJA_PASSKEY!,
+    consumerKey:    process.env.AFRINEX_DARAJA_CONSUMER_KEY!,
+    consumerSecret: process.env.AFRINEX_DARAJA_CONSUMER_SECRET!,
+    shortcode:      process.env.AFRINEX_DARAJA_SHORTCODE!,
+    passkey:        process.env.AFRINEX_DARAJA_PASSKEY!,
   },
   buni: {
-    consumerKey:    process.env.LIPAD_BUNI_CONSUMER_KEY!,
-    consumerSecret: process.env.LIPAD_BUNI_CONSUMER_SECRET!,
-    orgShortCode:   process.env.LIPAD_BUNI_ORG_SHORT_CODE!,
+    consumerKey:    process.env.AFRINEX_BUNI_CONSUMER_KEY!,
+    consumerSecret: process.env.AFRINEX_BUNI_CONSUMER_SECRET!,
+    orgShortCode:   process.env.AFRINEX_BUNI_ORG_SHORT_CODE!,
   },
 })
 
@@ -349,14 +349,14 @@ All credentials can be passed directly into `createClient()` **or** set as envir
 
 | Variable | Provider | Description |
 |---|---|---|
-| `LIPAD_DARAJA_CONSUMER_KEY` | Daraja | From Safaricom Developer Portal |
-| `LIPAD_DARAJA_CONSUMER_SECRET` | Daraja | From Safaricom Developer Portal |
-| `LIPAD_DARAJA_SHORTCODE` | Daraja | Your M-Pesa shortcode |
-| `LIPAD_DARAJA_PASSKEY` | Daraja | STK Push passkey |
-| `LIPAD_BUNI_CONSUMER_KEY` | Buni | From KCB Developer Portal |
-| `LIPAD_BUNI_CONSUMER_SECRET` | Buni | From KCB Developer Portal |
-| `LIPAD_BUNI_ORG_SHORT_CODE` | Buni | Your KCB org short code |
-| `LIPAD_CALLBACK_URL` | Global | Your webhook endpoint base URL |
+| `AFRINEX_DARAJA_CONSUMER_KEY` | Daraja | From Safaricom Developer Portal |
+| `AFRINEX_DARAJA_CONSUMER_SECRET` | Daraja | From Safaricom Developer Portal |
+| `AFRINEX_DARAJA_SHORTCODE` | Daraja | Your M-Pesa shortcode |
+| `AFRINEX_DARAJA_PASSKEY` | Daraja | STK Push passkey |
+| `AFRINEX_BUNI_CONSUMER_KEY` | Buni | From KCB Developer Portal |
+| `AFRINEX_BUNI_CONSUMER_SECRET` | Buni | From KCB Developer Portal |
+| `AFRINEX_BUNI_ORG_SHORT_CODE` | Buni | Your KCB org short code |
+| `AFRINEX_CALLBACK_URL` | Global | Your webhook endpoint base URL |
 
 Copy `.env.example` to `.env` to get started:
 
@@ -421,7 +421,7 @@ Lipad is written in TypeScript. All types are exported and available:
 
 ```typescript
 import type {
-  LipadConfig,          // Config object for createClient()
+  AfrinexConfig,          // Config object for createClient()
   DarajaConfig,         // Daraja-specific config shape
   BuniConfig,           // Buni-specific config shape
   StkPushRequest,       // Input to .stkPush()
@@ -464,10 +464,10 @@ const pay = createClient({
   env: 'production', // ← Change this
   callbackUrl: 'https://your-real-domain.com/webhooks',
   daraja: {
-    consumerKey:    process.env.LIPAD_DARAJA_CONSUMER_KEY!,    // ← Real credentials
-    consumerSecret: process.env.LIPAD_DARAJA_CONSUMER_SECRET!,
-    shortcode:      process.env.LIPAD_DARAJA_SHORTCODE!,
-    passkey:        process.env.LIPAD_DARAJA_PASSKEY!,
+    consumerKey:    process.env.AFRINEX_DARAJA_CONSUMER_KEY!,    // ← Real credentials
+    consumerSecret: process.env.AFRINEX_DARAJA_CONSUMER_SECRET!,
+    shortcode:      process.env.AFRINEX_DARAJA_SHORTCODE!,
+    passkey:        process.env.AFRINEX_DARAJA_PASSKEY!,
   },
 })
 ```
@@ -483,8 +483,8 @@ Use [ngrok](https://ngrok.com/) to expose your local server to the internet duri
 ngrok http 3000
 
 # Copy the HTTPS URL it gives you (e.g. https://abc123.ngrok.io)
-# Set it as your LIPAD_CALLBACK_URL in .env
-LIPAD_CALLBACK_URL=https://abc123.ngrok.io/webhooks
+# Set it as your AFRINEX_CALLBACK_URL in .env
+AFRINEX_CALLBACK_URL=https://abc123.ngrok.io/webhooks
 ```
 
 Then Safaricom/KCB's sandbox will be able to reach your local machine.
@@ -507,10 +507,10 @@ const pay = createClient({
   env: 'sandbox',
   callbackUrl: `${process.env.BASE_URL}/webhooks`,
   daraja: {
-    consumerKey:    process.env.LIPAD_DARAJA_CONSUMER_KEY!,
-    consumerSecret: process.env.LIPAD_DARAJA_CONSUMER_SECRET!,
-    shortcode:      process.env.LIPAD_DARAJA_SHORTCODE!,
-    passkey:        process.env.LIPAD_DARAJA_PASSKEY!,
+    consumerKey:    process.env.AFRINEX_DARAJA_CONSUMER_KEY!,
+    consumerSecret: process.env.AFRINEX_DARAJA_CONSUMER_SECRET!,
+    shortcode:      process.env.AFRINEX_DARAJA_SHORTCODE!,
+    passkey:        process.env.AFRINEX_DARAJA_PASSKEY!,
   },
 })
 

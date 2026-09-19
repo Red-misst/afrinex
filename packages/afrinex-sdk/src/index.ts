@@ -3,12 +3,12 @@ export { createClient } from './client'
 
 // ── Config types ─────────────────────────────────────────────────────────────
 export type {
-  LipadConfig,
+  AfrinexConfig,
   DarajaConfig,
   BuniConfig,
 } from './types/config'
 
-export type { LipadClient } from './types/client'
+export type { AfrinexClient } from './types/client'
 
 // ── Request types ─────────────────────────────────────────────────────────────
 export type {
@@ -31,7 +31,7 @@ export type { UnifiedWebhookPayload, WebhookEvent } from './types/webhook'
 export type { ProviderName, Environment } from './types/provider'
 
 // ── Error classes (consumers need these for catch blocks) ─────────────────────
-export { LipadError } from './errors/base'
+export { AfrinexError } from './errors/base'
 export { ConfigurationError } from './errors/config-error'
 export { AuthError } from './errors/auth-error'
 export { ProviderError } from './errors/provider-error'

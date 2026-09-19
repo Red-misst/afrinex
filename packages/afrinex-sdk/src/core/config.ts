@@ -1,10 +1,10 @@
 import { ConfigurationError } from '../errors/config-error'
-import type { LipadConfig, ResolvedLipadConfig } from '../types/config'
+import type { AfrinexConfig, ResolvedAfrinexConfig } from '../types/config'
 import { DARAJA_URLS } from '../providers/daraja/constants'
 import { BUNI_URLS } from '../providers/buni/constants'
 
 /**
- * Resolves a LipadConfig into a fully validated ResolvedLipadConfig.
+ * Resolves a AfrinexConfig into a fully validated ResolvedAfrinexConfig.
  *
  * For each provider:
  *   1. Credentials are resolved from the config object first, then env vars
@@ -12,8 +12,8 @@ import { BUNI_URLS } from '../providers/buni/constants'
  *   3. baseUrl is attached from the provider's constants.ts
  *   4. In sandbox mode, warns if credentials came from env vars
  */
-export function resolveConfig(input: LipadConfig): ResolvedLipadConfig {
-  const resolved: ResolvedLipadConfig = {
+export function resolveConfig(input: AfrinexConfig): ResolvedAfrinexConfig {
+  const resolved: ResolvedAfrinexConfig = {
     env: input.env,
     ...(input.callbackUrl !== undefined ? { callbackUrl: input.callbackUrl } : {}),
     ...(input.default !== undefined ? { default: input.default } : {}),
@@ -25,31 +25,31 @@ export function resolveConfig(input: LipadConfig): ResolvedLipadConfig {
 
     const consumerKey = resolveCredential(
       input.daraja.consumerKey,
-      'LIPAD_DARAJA_CONSUMER_KEY',
-      'Daraja consumerKey is required. Pass it to createClient() or set LIPAD_DARAJA_CONSUMER_KEY.',
+      'AFRINEX_DARAJA_CONSUMER_KEY',
+      'Daraja consumerKey is required. Pass it to createClient() or set AFRINEX_DARAJA_CONSUMER_KEY.',
       fromEnv,
     )
     const consumerSecret = resolveCredential(
       input.daraja.consumerSecret,
-      'LIPAD_DARAJA_CONSUMER_SECRET',
-      'Daraja consumerSecret is required. Pass it to createClient() or set LIPAD_DARAJA_CONSUMER_SECRET.',
+      'AFRINEX_DARAJA_CONSUMER_SECRET',
+      'Daraja consumerSecret is required. Pass it to createClient() or set AFRINEX_DARAJA_CONSUMER_SECRET.',
       fromEnv,
     )
     const shortcode = resolveCredential(
       input.daraja.shortcode,
-      'LIPAD_DARAJA_SHORTCODE',
-      'Daraja shortcode is required. Pass it to createClient() or set LIPAD_DARAJA_SHORTCODE.',
+      'AFRINEX_DARAJA_SHORTCODE',
+      'Daraja shortcode is required. Pass it to createClient() or set AFRINEX_DARAJA_SHORTCODE.',
       fromEnv,
     )
     const passkey = resolveCredential(
       input.daraja.passkey,
-      'LIPAD_DARAJA_PASSKEY',
-      'Daraja passkey is required. Pass it to createClient() or set LIPAD_DARAJA_PASSKEY.',
+      'AFRINEX_DARAJA_PASSKEY',
+      'Daraja passkey is required. Pass it to createClient() or set AFRINEX_DARAJA_PASSKEY.',
       fromEnv,
     )
 
     if (input.env === 'sandbox' && fromEnv.length > 0) {
-      console.warn('[lipad] sandbox · daraja credentials resolved from environment')
+      console.warn('[afrinex] sandbox · daraja credentials resolved from environment')
     }
 
     resolved.daraja = {
@@ -67,25 +67,25 @@ export function resolveConfig(input: LipadConfig): ResolvedLipadConfig {
 
     const consumerKey = resolveCredential(
       input.buni.consumerKey,
-      'LIPAD_BUNI_CONSUMER_KEY',
-      'Buni consumerKey is required. Pass it to createClient() or set LIPAD_BUNI_CONSUMER_KEY.',
+      'AFRINEX_BUNI_CONSUMER_KEY',
+      'Buni consumerKey is required. Pass it to createClient() or set AFRINEX_BUNI_CONSUMER_KEY.',
       fromEnv,
     )
     const consumerSecret = resolveCredential(
       input.buni.consumerSecret,
-      'LIPAD_BUNI_CONSUMER_SECRET',
-      'Buni consumerSecret is required. Pass it to createClient() or set LIPAD_BUNI_CONSUMER_SECRET.',
+      'AFRINEX_BUNI_CONSUMER_SECRET',
+      'Buni consumerSecret is required. Pass it to createClient() or set AFRINEX_BUNI_CONSUMER_SECRET.',
       fromEnv,
     )
     const orgShortCode = resolveCredential(
       input.buni.orgShortCode,
-      'LIPAD_BUNI_ORG_SHORT_CODE',
-      'Buni orgShortCode is required. Pass it to createClient() or set LIPAD_BUNI_ORG_SHORT_CODE.',
+      'AFRINEX_BUNI_ORG_SHORT_CODE',
+      'Buni orgShortCode is required. Pass it to createClient() or set AFRINEX_BUNI_ORG_SHORT_CODE.',
       fromEnv,
     )
 
     if (input.env === 'sandbox' && fromEnv.length > 0) {
-      console.warn('[lipad] sandbox · buni credentials resolved from environment')
+      console.warn('[afrinex] sandbox · buni credentials resolved from environment')
     }
 
     resolved.buni = {

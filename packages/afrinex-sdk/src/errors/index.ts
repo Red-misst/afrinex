@@ -1,5 +1,5 @@
-export { LipadError } from './base'
-export type { LipadErrorCode } from './base'
+export { AfrinexError } from './base'
+export type { AfrinexErrorCode } from './base'
 export { ConfigurationError } from './config-error'
 export { AuthError } from './auth-error'
 export { ProviderError } from './provider-error'

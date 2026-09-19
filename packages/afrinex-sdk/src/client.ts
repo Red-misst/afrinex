@@ -1,5 +1,5 @@
-import type { LipadConfig } from './types/config'
-import type { LipadClient } from './types/client'
+import type { AfrinexConfig } from './types/config'
+import type { AfrinexClient } from './types/client'
 import { resolveConfig } from './core/config'
 import { DarajaProvider } from './providers/daraja'
 import { BuniProvider } from './providers/buni'
@@ -8,7 +8,7 @@ import { createBuniAuth } from './providers/buni/auth'
 import { HttpClient } from './core/http-client'
 
 /**
- * Creates a Lipad client with the given configuration.
+ * Creates an Afrinex client with the given configuration.
  *
  * Only providers with config present are instantiated.
  * Each provider gets its own HttpClient, AuthStrategy, and resolved config.
@@ -23,10 +23,10 @@ import { HttpClient } from './core/http-client'
  * })
  * const result = await pay.daraja!.stkPush({ phone: '0712345678', amount: 1, reference: 'inv-001' })
  */
-export function createClient(config: LipadConfig): LipadClient {
+export function createClient(config: AfrinexConfig): AfrinexClient {
   const resolved = resolveConfig(config)
 
-  const client: Partial<LipadClient> = {}
+  const client: Partial<AfrinexClient> = {}
 
   if (resolved.daraja !== undefined) {
     const http = new HttpClient(resolved.daraja.baseUrl)
@@ -40,5 +40,5 @@ export function createClient(config: LipadConfig): LipadClient {
     client.buni = new BuniProvider(resolved.buni, resolved.env, auth)
   }
 
-  return client as LipadClient
+  return client as AfrinexClient
 }

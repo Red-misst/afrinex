@@ -18,7 +18,7 @@ const PROVIDER_SLUGS: Record<ProviderName, string> = {
  * Priority:
  *   1. request-level callbackUrl
  *   2. global callbackUrl from config
- *   3. LIPAD_CALLBACK_URL environment variable
+ *   3. AFRINEX_CALLBACK_URL environment variable
  *   4. throws ConfigurationError
  *
  * Automatically appends the provider slug (/daraja, /buni).
@@ -28,11 +28,11 @@ export function resolveCallbackUrl(opts: ResolveCallbackUrlOpts): string {
   const base =
     opts.request ??
     opts.global ??
-    process.env['LIPAD_CALLBACK_URL']
+    process.env['AFRINEX_CALLBACK_URL']
 
   if (!base) {
     throw new ConfigurationError(
-      'A callbackUrl is required. Pass it to createClient(), per-request, or set LIPAD_CALLBACK_URL.'
+      'A callbackUrl is required. Pass it to createClient(), per-request, or set AFRINEX_CALLBACK_URL.'
     )
   }
 

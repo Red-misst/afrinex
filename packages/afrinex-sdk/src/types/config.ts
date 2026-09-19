@@ -13,7 +13,7 @@ export interface BuniConfig {
   orgShortCode: string
 }
 
-export interface LipadConfig {
+export interface AfrinexConfig {
   env: Environment
   callbackUrl?: string
   default?: ProviderName
@@ -30,7 +30,7 @@ export interface ResolvedBuniConfig extends BuniConfig {
   baseUrl: string
 }
 
-export interface ResolvedLipadConfig {
+export interface ResolvedAfrinexConfig {
   env: Environment
   callbackUrl?: string
   default?: ProviderName

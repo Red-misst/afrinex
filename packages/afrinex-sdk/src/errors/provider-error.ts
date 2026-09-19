@@ -1,6 +1,6 @@
-import { LipadError } from './base'
+import { AfrinexError } from './base'
 
-export class ProviderError extends LipadError {
+export class ProviderError extends AfrinexError {
   readonly providerCode: string
   readonly providerMessage: string
   readonly raw: unknown

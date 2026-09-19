@@ -1,6 +1,6 @@
-import { LipadError } from './base'
+import { AfrinexError } from './base'
 
-export class ProviderCapabilityError extends LipadError {
+export class ProviderCapabilityError extends AfrinexError {
   constructor(provider: string, method: string) {
     super(
       'PROVIDER_CAPABILITY_ERROR',

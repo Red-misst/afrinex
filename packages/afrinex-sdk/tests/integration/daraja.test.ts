@@ -1,19 +1,19 @@
 import { describe, it, expect } from 'vitest'
 import { createClient } from '../../src/client'
 
-// Integration tests are silently skipped unless LIPAD_DARAJA_CONSUMER_KEY is set.
-// Run locally with: LIPAD_DARAJA_CONSUMER_KEY=... npx vitest run tests/integration
-describe.skipIf(!process.env['LIPAD_DARAJA_CONSUMER_KEY'])(
+// Integration tests are silently skipped unless AFRINEX_DARAJA_CONSUMER_KEY is set.
+// Run locally with: AFRINEX_DARAJA_CONSUMER_KEY=... npx vitest run tests/integration
+describe.skipIf(!process.env['AFRINEX_DARAJA_CONSUMER_KEY'])(
   'Daraja integration',
   () => {
     const pay = createClient({
       env: 'sandbox',
-      callbackUrl: process.env['LIPAD_CALLBACK_URL'] ?? 'https://example.com/webhooks',
+      callbackUrl: process.env['AFRINEX_CALLBACK_URL'] ?? 'https://example.com/webhooks',
       daraja: {
-        consumerKey: process.env['LIPAD_DARAJA_CONSUMER_KEY']!,
-        consumerSecret: process.env['LIPAD_DARAJA_CONSUMER_SECRET']!,
-        shortcode: process.env['LIPAD_DARAJA_SHORTCODE']!,
-        passkey: process.env['LIPAD_DARAJA_PASSKEY']!,
+        consumerKey: process.env['AFRINEX_DARAJA_CONSUMER_KEY']!,
+        consumerSecret: process.env['AFRINEX_DARAJA_CONSUMER_SECRET']!,
+        shortcode: process.env['AFRINEX_DARAJA_SHORTCODE']!,
+        passkey: process.env['AFRINEX_DARAJA_PASSKEY']!,
       },
     })
 

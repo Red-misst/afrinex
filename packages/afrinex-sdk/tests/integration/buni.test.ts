@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest'
 import { createClient } from '../../src/client'
 
-// Integration tests are silently skipped unless LIPAD_BUNI_CONSUMER_KEY is set.
-describe.skipIf(!process.env['LIPAD_BUNI_CONSUMER_KEY'])(
+// Integration tests are silently skipped unless AFRINEX_BUNI_CONSUMER_KEY is set.
+describe.skipIf(!process.env['AFRINEX_BUNI_CONSUMER_KEY'])(
   'Buni integration',
   () => {
     const pay = createClient({
       env: 'sandbox',
-      callbackUrl: process.env['LIPAD_CALLBACK_URL'] ?? 'https://example.com/webhooks',
+      callbackUrl: process.env['AFRINEX_CALLBACK_URL'] ?? 'https://example.com/webhooks',
       buni: {
-        consumerKey: process.env['LIPAD_BUNI_CONSUMER_KEY']!,
-        consumerSecret: process.env['LIPAD_BUNI_CONSUMER_SECRET']!,
-        orgShortCode: process.env['LIPAD_BUNI_ORG_SHORT_CODE']!,
+        consumerKey: process.env['AFRINEX_BUNI_CONSUMER_KEY']!,
+        consumerSecret: process.env['AFRINEX_BUNI_CONSUMER_SECRET']!,
+        orgShortCode: process.env['AFRINEX_BUNI_ORG_SHORT_CODE']!,
       },
     })
 

@@ -1,13 +1,13 @@
-// LipadClient is defined here to avoid circular imports
+// AfrinexClient is defined here to avoid circular imports
 // (config.ts cannot import from providers, but providers import from config.ts)
-export type { LipadClient } from './client'
+export type { AfrinexClient } from './client'
 export type {
   DarajaConfig,
   BuniConfig,
-  LipadConfig,
+  AfrinexConfig,
   ResolvedDarajaConfig,
   ResolvedBuniConfig,
-  ResolvedLipadConfig,
+  ResolvedAfrinexConfig,
 } from './config'
 export type { ProviderName, Environment, AuthContext, AuthStrategy } from './provider'
 export type { StkPushRequest, TransferToPhoneRequest, PaymentQueryRequest } from './requests'
