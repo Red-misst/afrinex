@@ -21,5 +21,28 @@
     "typescript": "^5.4.5",
     "tsup": "^8.0.2",
     "vitest": "^1.6.0"
+  },
+  "author": "Isaac Muigai",
+  "license": "MIT",
+  "keywords": [
+    "langchain",
+    "langgraph",
+    "agent",
+    "mpesa",
+    "safaricom",
+    "daraja",
+    "kcb",
+    "buni",
+    "afrinex",
+    "kenya",
+    "payments"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Red-misst/afrinex.git",
+    "directory": "packages/afrinex-agent"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
