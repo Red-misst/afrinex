@@ -1,4 +1,4 @@
-import type { Environment, ProviderName } from './provider'
+import type { Environment, IProvider } from './provider'
 
 export interface DarajaConfig {
   consumerKey: string
@@ -16,12 +16,10 @@ export interface BuniConfig {
 export interface AfrinexConfig {
   env: Environment
   callbackUrl?: string
-  default?: ProviderName
-  daraja?: DarajaConfig
-  buni?: BuniConfig
+  default?: string
+  providers: Record<string, IProvider>
 }
 
-// Internal resolved config — all fields guaranteed present after resolveConfig()
 export interface ResolvedDarajaConfig extends DarajaConfig {
   baseUrl: string
 }
@@ -30,10 +28,10 @@ export interface ResolvedBuniConfig extends BuniConfig {
   baseUrl: string
 }
 
+// Internal resolved config — all fields guaranteed present after resolveConfig()
 export interface ResolvedAfrinexConfig {
   env: Environment
   callbackUrl?: string
-  default?: ProviderName
-  daraja?: ResolvedDarajaConfig
-  buni?: ResolvedBuniConfig
+  default?: string
+  providers: Record<string, IProvider>
 }

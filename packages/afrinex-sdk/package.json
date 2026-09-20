@@ -1,6 +1,6 @@
 {
   "name": "afrinex",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Unified payments SDK for Kenya — Safaricom M-Pesa (Daraja) and KCB (Buni)",
   "author": "Isaac Muigai",
   "license": "MIT",
@@ -55,6 +55,7 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "tsup": "^8.0.0",
+    "typescript": "^5.4.5",
     "vitest": "^1.6.0"
   }
 }

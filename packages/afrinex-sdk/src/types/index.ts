@@ -9,7 +9,7 @@ export type {
   ResolvedBuniConfig,
   ResolvedAfrinexConfig,
 } from './config'
-export type { ProviderName, Environment, AuthContext, AuthStrategy } from './provider'
-export type { StkPushRequest, TransferToPhoneRequest, PaymentQueryRequest } from './requests'
-export type { StkPushResponse, TransferResponse, PaymentQueryResponse } from './responses'
+export type { IProvider, Environment, AuthContext, AuthStrategy } from './provider'
+export type { StkPushRequest, TransferToPhoneRequest, PaymentQueryRequest, BalanceRequest } from './requests'
+export type { StkPushResponse, TransferResponse, PaymentQueryResponse, BalanceResponse } from './responses'
 export type { WebhookEvent, UnifiedWebhookPayload } from './webhook'

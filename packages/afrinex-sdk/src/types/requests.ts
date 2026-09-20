@@ -18,3 +18,8 @@ export interface PaymentQueryRequest {
   transactionId: string
   reference?: string
 }
+
+export interface BalanceRequest {
+  remarks?: string
+  callbackUrl?: string
+}

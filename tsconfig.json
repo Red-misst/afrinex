@@ -1,6 +1,8 @@
 {
   "files": [],
   "references": [
-    { "path": "./packages/lipad-sdk" }
+    {
+      "path": "./packages/afrinex-sdk"
+    }
   ]
 }

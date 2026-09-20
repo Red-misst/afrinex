@@ -20,3 +20,11 @@ export interface PaymentQueryResponse {
   reference: string
   raw: unknown
 }
+
+export interface BalanceResponse {
+  success: boolean
+  balance: number
+  currency: string
+  message: string
+  raw: unknown
+}

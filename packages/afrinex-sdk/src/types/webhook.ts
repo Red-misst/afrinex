@@ -1,9 +1,7 @@
-import type { ProviderName } from './provider'
-
 export type WebhookEvent = 'payment.success' | 'payment.failed' | 'payment.pending'
 
 export interface UnifiedWebhookPayload {
-  provider: ProviderName
+  provider: string
   event: WebhookEvent
   transactionId: string
   amount: number

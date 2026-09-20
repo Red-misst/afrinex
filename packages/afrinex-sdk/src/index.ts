@@ -15,6 +15,7 @@ export type {
   StkPushRequest,
   TransferToPhoneRequest,
   PaymentQueryRequest,
+  BalanceRequest,
 } from './types/requests'
 
 // ── Response types ────────────────────────────────────────────────────────────
@@ -22,13 +23,18 @@ export type {
   StkPushResponse,
   TransferResponse,
   PaymentQueryResponse,
+  BalanceResponse,
 } from './types/responses'
 
 // ── Webhook types ─────────────────────────────────────────────────────────────
 export type { UnifiedWebhookPayload, WebhookEvent } from './types/webhook'
 
 // ── Provider meta types ───────────────────────────────────────────────────────
-export type { ProviderName, Environment } from './types/provider'
+export type { IProvider, Environment } from './types/provider'
+
+// ── Providers ─────────────────────────────────────────────────────────────────
+export { DarajaProvider } from './providers/daraja'
+export { BuniProvider } from './providers/buni'
 
 // ── Error classes (consumers need these for catch blocks) ─────────────────────
 export { AfrinexError } from './errors/base'
