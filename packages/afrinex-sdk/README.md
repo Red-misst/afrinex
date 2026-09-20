@@ -225,7 +225,7 @@ Looking to add a financial AI assistant to your app? `afrinex` is tightly integr
 
 The agent uses LangGraph and LangChain to autonomously stage payments, check balances, and query transactions based on natural language prompts (e.g. *"Transfer 20,000 to John"*). It also includes built-in Human-In-The-Loop (HITL) safeguards to intercept high-value transfers for human approval.
 
-Check out the [Agent Package README](./packages/afrinex-agent/README.md) to learn more.
+Check out the [Agent Package README](./packages/@afrinex/agent/README.md) to learn more.
 
 ---
 

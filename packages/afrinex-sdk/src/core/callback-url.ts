@@ -1,15 +1,9 @@
 import { ConfigurationError } from '../errors/config-error'
-import type { ProviderName } from '../types/provider'
 
 interface ResolveCallbackUrlOpts {
   request?: string | undefined
   global?: string | undefined
-  provider: ProviderName
-}
-
-const PROVIDER_SLUGS: Record<ProviderName, string> = {
-  daraja: '/daraja',
-  buni: '/buni',
+  provider: string
 }
 
 /**
@@ -21,7 +15,7 @@ const PROVIDER_SLUGS: Record<ProviderName, string> = {
  *   3. AFRINEX_CALLBACK_URL environment variable
  *   4. throws ConfigurationError
  *
- * Automatically appends the provider slug (/daraja, /buni).
+ * Automatically appends the provider slug (e.g., /daraja, /buni).
  * Strips trailing slashes from the base URL before appending.
  */
 export function resolveCallbackUrl(opts: ResolveCallbackUrlOpts): string {
@@ -38,5 +32,5 @@ export function resolveCallbackUrl(opts: ResolveCallbackUrlOpts): string {
 
   // Strip trailing slash before appending provider slug
   const stripped = base.replace(/\/+$/, '')
-  return stripped + PROVIDER_SLUGS[opts.provider]
+  return `${stripped}/${opts.provider}`
 }
