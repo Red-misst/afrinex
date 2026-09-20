@@ -40,7 +40,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/Red-misst/afrinex.git",
-    "directory": "packages/afrinex-agent"
+    "directory": "packages/@afrinex/agent"
   },
   "publishConfig": {
     "access": "public"
