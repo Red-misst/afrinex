@@ -41,12 +41,37 @@ export const createTransactionTool = (
         approvalThreshold
       };
 
+      if (!requiresApproval) {
+        if (!client) {
+          return JSON.stringify({ error: "AfrinexConfig not provided. Cannot execute transaction automatically." });
+        }
+        
+        try {
+          const sdkProvider = client.getProvider(provider);
+          let res;
+          if (action === 'stkPush') {
+            res = await sdkProvider.stkPush({ phone, amount, reference, description: reference });
+          } else if (action === 'transfer') {
+            res = await sdkProvider.transfers.toPhone({ phone, amount, reference, description: reference });
+          }
+          
+          return JSON.stringify({
+            status: "executed",
+            executedTransaction: res,
+            message: `Transaction executed automatically (amount ${amount} <= ${approvalThreshold}). Provider response: ${JSON.stringify(res)}`
+          });
+        } catch (error: any) {
+          return JSON.stringify({
+            status: "error",
+            message: `Failed to execute transaction: ${error.message}`
+          });
+        }
+      }
+
       return JSON.stringify({
         status: "staged",
         stagedTransaction,
-        message: requiresApproval 
-          ? `Transaction requires human approval (amount ${amount} > ${approvalThreshold}). It has been staged and paused for review.`
-          : `Transaction staged for automatic execution.`
+        message: `Transaction requires human approval (amount ${amount} > ${approvalThreshold}). It has been staged and paused for review.`
       });
     },
     {
