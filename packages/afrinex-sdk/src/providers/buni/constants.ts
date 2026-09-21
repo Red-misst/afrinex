@@ -8,4 +8,5 @@ export const BUNI_PATHS = {
   stkPush: '/mm/api/request/1.0.0/stkpush',
   transfer: '/mm/api/request/1.0.0/b2c',
   query: '/mm/api/request/1.0.0/reconciliation',
+  accountBalance: '/mm/api/request/1.0.0/accountbalance',
 } as const

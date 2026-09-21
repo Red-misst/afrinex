@@ -9,4 +9,5 @@ export const DARAJA_PATHS = {
   stkQuery: '/mpesa/stkpushquery/v1/query',
   b2c: '/mpesa/b2c/v1/paymentrequest',
   b2cQuery: '/mpesa/transactionstatus/v1/query',
+  accountBalance: '/mpesa/accountbalance/v1/query',
 } as const

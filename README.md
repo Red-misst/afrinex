@@ -1,265 +1,96 @@
-# afrinex
+# Afrinex Monorepo
 
-> One SDK. Two providers. M-Pesa and KCB payments for Kenya — done right.
+> The modern toolkit for integrating Kenyan payments (M-Pesa and KCB) and building Conversational AI Financial Assistants.
 
-[![npm version](https://img.shields.io/npm/v/afrinex)](https://www.npmjs.com/package/afrinex)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
 ---
 
-## What is afrinex?
+## 🌍 The Afrinex Mission
 
-If you've ever tried to integrate M-Pesa (Safaricom Daraja) or KCB (Buni) payments in a Node.js app, you know the pain:
+Building financial technology in Kenya has often meant dealing with fragmented APIs, inconsistent documentation, and complex integration flows. The **Afrinex** ecosystem exists to solve this problem by abstracting away the complexity of integrating with Safaricom Daraja (M-Pesa) and KCB Buni.
 
-- Each provider has a completely different API shape
-- Auth flows differ (OAuth2 vs basic tokens)
-- Webhooks are formatted differently per provider
-- You have to write and maintain separate integration code for each one
-
-**afrinex solves this.** It wraps both providers behind a single, consistent interface:
-
-- **Dynamic Provider Registry**: Import and instantiate only the providers you need.
-- **Unified Interface**: Same method names across providers (`stkPush`, `transfers.toPhone`, `payments.query`)
-- **Same Webhook Shape**: Parse once, handle everywhere.
-- **Full TypeScript Support**: Complete autocomplete and type safety.
-- **AI Agent Ready**: Seamlessly plugs into `@afrinex/agent` to give your app a conversational financial assistant!
+But we didn't stop at just building an SDK. We integrated the latest in Large Language Models (LLMs) and Graph architectures (LangGraph) to bring **Conversational Finance** to life, allowing users to interact with their accounts using natural language.
 
 ---
 
-## Supported Providers
+## 📦 Packages in this Repository
 
-| Provider | Bank | What You Can Do |
-|---|---|---|
-| **Daraja** | Safaricom | M-Pesa STK Push (C2B), Payment Query, Webhook Parsing |
-| **Buni** | KCB Bank | STK Push (C2B Express Checkout), Transfer to Phone (B2C), Payment Query, Webhook Parsing |
+This repository is a monorepo containing the following packages. Click on the package names to read their comprehensive documentation and integration guides.
 
-> **Sandbox-first design** — Both providers offer free sandbox environments. You can build and test everything without spending a shilling.
+### 1. [afrinex (SDK)](./packages/afrinex-sdk/README.md)
+The core unified SDK. It wraps both Daraja and Buni behind a single, consistent interface.
+- **Key Features**: Dynamic provider registry, unified DTOs, standard webhook parser, strongly-typed errors.
+- **Perfect for**: Traditional Node.js applications that need reliable, clean M-Pesa or KCB integration.
 
----
-
-## Requirements
-
-- **Node.js** v18 or higher
-- A **Safaricom Developer** account (for Daraja) → [developer.safaricom.co.ke](https://developer.safaricom.co.ke/)
-- A **KCB Developer** account (for Buni) → [buni.kcbgroup.com](https://buni.kcbgroup.com/)
+### 2. [@afrinex/agent (AI Agent)](./packages/afrinex-agent/README.md)
+An add-on package that provides a LangGraph-powered AI Agent. 
+- **Key Features**: Understands natural language to perform financial transactions, stateful memory, and built-in Human-In-The-Loop (HITL) safety boundaries to prevent unauthorized large transfers.
+- **Perfect for**: Building AI chatbots, Telegram bots, or WhatsApp bots that can securely manage mobile money and bank accounts.
 
 ---
 
-## Installation
+## 🛠️ Repository Structure
+
+```text
+afrinex/
+├── packages/
+│   ├── afrinex-sdk/      # The core unified payments SDK
+│   └── afrinex-agent/    # The LangGraph-powered AI conversational agent
+├── package.json          # Root configuration for monorepo
+└── README.md             # This file
+```
+
+---
+
+## 🚀 Getting Started for Developers
+
+If you want to use the packages in your project, install them directly from npm:
 
 ```bash
-npm install afrinex
+npm install afrinex @afrinex/agent
 ```
-or
+
+If you want to **clone, fork, or contribute** to this monorepo, follow these steps:
+
+### 1. Clone the repository
 ```bash
-yarn add afrinex
+git clone https://github.com/Red-misst/afrinex.git
+cd afrinex
 ```
 
----
-
-## Getting Your Credentials
-
-Before you can run any code, you need API credentials from each provider's developer portal. 
-
-### Daraja (Safaricom M-Pesa)
-1. Go to [developer.safaricom.co.ke](https://developer.safaricom.co.ke/) and create a free account
-2. Click **My Apps → Create New App**
-3. Select **Lipa Na M-Pesa Online** (this is STK Push)
-4. After creating the app, click on it to see your `Consumer Key` and `Consumer Secret`.
-5. For the **shortcode** and **passkey**, use Safaricom's sandbox test credentials:
-   - Shortcode: `174379`
-   - Passkey: `bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919`
-
-### Buni (KCB Bank)
-1. Go to [buni.kcbgroup.com](https://buni.kcbgroup.com/) and create a free account
-2. Create a new application
-3. After creating the app, you'll find your `Consumer Key` and `Consumer Secret`.
-4. For the **orgShortCode**, use KCB's sandbox short code: `522522`
-
----
-
-## Quickstart (5 minutes to your first STK Push)
-
-### Step 1 — Set up environment variables
-
-Create a `.env` file in your project root:
-
+### 2. Install dependencies
+This project uses workspace management (npm/yarn/pnpm workspaces). Run the install command at the root level.
 ```bash
-# Daraja (Safaricom M-Pesa)
-AFRINEX_DARAJA_CONSUMER_KEY=your_consumer_key_here
-AFRINEX_DARAJA_CONSUMER_SECRET=your_consumer_secret_here
-AFRINEX_DARAJA_SHORTCODE=174379
-AFRINEX_DARAJA_PASSKEY=bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
-
-# Your callback URL
-AFRINEX_CALLBACK_URL=https://your-domain.com/webhooks
+npm install
 ```
 
-### Step 2 — Write your first integration
-
-```typescript
-import 'dotenv/config'
-import { createClient, DarajaProvider } from 'afrinex'
-
-const env = 'sandbox';
-
-// 1. Instantiate the provider directly
-const daraja = new DarajaProvider({
-  consumerKey: process.env.AFRINEX_DARAJA_CONSUMER_KEY!,
-  consumerSecret: process.env.AFRINEX_DARAJA_CONSUMER_SECRET!,
-  shortcode: process.env.AFRINEX_DARAJA_SHORTCODE!,
-  passkey: process.env.AFRINEX_DARAJA_PASSKEY!
-}, env);
-
-// 2. Load it into the client
-const pay = createClient({
-  env,
-  callbackUrl: process.env.AFRINEX_CALLBACK_URL,
-  providers: { daraja }
-});
-
-// 3. Trigger an M-Pesa STK Push
-const result = await pay.getProvider('daraja').stkPush({
-  phone: '0712345678',   // Accepts 07XX, +2547XX, or 2547XX format
-  amount: 1,             // Amount in KES (minimum is 1)
-  reference: 'order-001' // Your internal order/invoice ID
-});
-
-console.log('Transaction ID:', result.transactionId);
+### 3. Build all packages
+```bash
+npm run build --workspaces
 ```
+
+### 4. Running Tests
+Each package has its own test suite powered by `vitest`.
+```bash
+npm run test --workspaces
+```
+
+*(Note: To run integration tests successfully, you will need to set up a `.env` file in each package with your respective Daraja/Buni sandbox credentials).*
 
 ---
 
-## Full API Reference
+## 🤝 Contributing
 
-### `createClient(config)`
+We welcome contributions! Whether you want to add a new provider (like Airtel Money or Equity Bank) to the SDK, or build a new Tool for the AI Agent, your pull requests are welcome. 
 
-Creates an `afrinex` client mapping out the dynamic providers you supply.
-
-```typescript
-import { createClient, DarajaProvider, BuniProvider } from 'afrinex'
-
-const pay = createClient({
-  env: 'sandbox', 
-  callbackUrl: 'https://...',
-  providers: {
-    daraja: new DarajaProvider({ ... }, 'sandbox'),
-    buni: new BuniProvider({ ... }, 'sandbox')
-  }
-});
-
-// Fetch provider instance dynamically
-const provider = pay.getProvider('buni');
-```
+Please refer to the specific **Guide for Contributors & Forking** section in each package's README for detailed instructions on how to extend the codebase:
+- [SDK Contributor Guide](./packages/afrinex-sdk/README.md#%EF%B8%8F-guide-for-contributors--forking)
+- [Agent Contributor Guide](./packages/afrinex-agent/README.md#%EF%B8%8F-guide-for-contributors--forking)
 
 ---
 
-### Shared Provider Interface (`IProvider`)
-
-Because `afrinex` is dynamic, all registered providers implement the `IProvider` interface, meaning you can interchangeably call the following methods on either Daraja or Buni.
-
-#### `stkPush(request)`
-
-Sends a payment prompt directly to the customer's phone.
-
-```typescript
-const result = await provider.stkPush({
-  phone: '0712345678',              
-  amount: 500,                      
-  reference: 'INV-2024-001',        
-  description: 'Payment for order', 
-});
-
-// result: { success: true, transactionId: 'ws_CO_...', ... }
-```
-
-#### `transfers.toPhone(request)` *(Buni-only currently)*
-
-Send money directly to a phone number (B2C — Business to Customer transfer).
-
-```typescript
-const result = await pay.getProvider('buni').transfers.toPhone({
-  phone: '0722000000',
-  amount: 500,
-  reference: 'PAYOUT-001',
-  remarks: 'Salary disbursement', 
-});
-```
-
-#### `payments.query(request)`
-
-Check the status of a payment after an STK Push. 
-
-```typescript
-const status = await provider.payments.query({
-  transactionId: 'ws_CO_...', // The transactionId from stkPush result
-});
-
-// status: { status: 'success' | 'failed' | 'pending', amount: 500, ... }
-```
-
-#### `webhooks.parse(payload)`
-
-Parse an incoming webhook notification into a unified format.
-
-```typescript
-app.post('/webhooks/:provider', (req, res) => {
-  const providerName = req.params.provider;
-  const event = pay.getProvider(providerName).webhooks.parse(req.body);
-
-  console.log(event.provider)       // 'daraja' or 'buni'
-  console.log(event.event)          // 'payment.success' | 'payment.failed'
-  console.log(event.amount)         // Amount in KES
-  console.log(event.phone)          // Normalized to 2547XXXXXXXX
-  
-  res.sendStatus(200);
-});
-```
-
----
-
-## AI Agent Ecosystem
-
-Looking to add a financial AI assistant to your app? `afrinex` is tightly integrated with its own AI agent package: `@afrinex/agent`.
-
-The agent uses LangGraph and LangChain to autonomously stage payments, check balances, and query transactions based on natural language prompts (e.g. *"Transfer 20,000 to John"*). It also includes built-in Human-In-The-Loop (HITL) safeguards to intercept high-value transfers for human approval.
-
-Check out the [Agent Package README](./packages/@afrinex/agent/README.md) to learn more.
-
----
-
-## Error Handling
-
-`afrinex` throws strongly-typed errors:
-
-```typescript
-import { ConfigurationError, AuthError, ProviderError, ProviderCapabilityError } from 'afrinex'
-
-try {
-  await provider.stkPush({ ... })
-} catch (err) {
-  if (err instanceof ProviderCapabilityError) {
-    // Provider does not support this method (e.g. Daraja doesn't support transfers yet)
-  } else if (err instanceof ProviderError) {
-    // The API returned a rejection (e.g. invalid phone number)
-  }
-}
-```
-
----
-
-## Going to Production
-
-When you're ready to accept real payments:
-
-1. Switch `env` to `'production'` when instantiating the providers and client.
-2. Replace sandbox credentials with real production credentials.
-3. Set up a public HTTPS callback URL for webhooks.
-
----
-
-## License
+## 📜 License
 
 MIT © [Isaac Muigai](https://github.com/Red-misst)
-

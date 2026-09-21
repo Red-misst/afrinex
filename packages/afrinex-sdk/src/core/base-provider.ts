@@ -3,6 +3,7 @@ import type { StkPushRequest, TransferToPhoneRequest, PaymentQueryRequest, Balan
 import type { StkPushResponse, TransferResponse, PaymentQueryResponse, BalanceResponse } from '../types/responses'
 import { HttpClient } from './http-client'
 import { ProviderCapabilityError } from '../errors/capability-error'
+import type { EventEmitter } from 'events'
 
 /**
  * Abstract base class for all provider implementations.
@@ -19,6 +20,7 @@ export abstract class BaseProvider implements IProvider {
   protected env: Environment
   protected auth: AuthStrategy
   public readonly name: string
+  protected emitter?: EventEmitter
 
   constructor(opts: {
     name: string
@@ -30,6 +32,10 @@ export abstract class BaseProvider implements IProvider {
     this.env = opts.env
     this.auth = opts.auth
     this.http = new HttpClient(opts.baseUrl)
+  }
+
+  public setEventEmitter(emitter: EventEmitter) {
+    this.emitter = emitter
   }
 
   protected notSupported(method: string): never {
@@ -54,5 +60,11 @@ export abstract class BaseProvider implements IProvider {
 
   async balances(request?: BalanceRequest): Promise<BalanceResponse> {
     this.notSupported('balances')
+  }
+
+  webhooks = {
+    parse: (payload: unknown): any => {
+      this.notSupported('webhooks.parse')
+    }
   }
 }

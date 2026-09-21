@@ -7,4 +7,4 @@ dist/
 .turbo/
 coverage/
 *.tsbuildinfo
-examples/test-app/
+examples/

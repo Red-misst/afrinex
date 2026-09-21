@@ -42,8 +42,9 @@ export class DarajaProvider extends BaseProvider {
   }
 
   transfers = {
-    toPhone: (_req: TransferToPhoneRequest): Promise<TransferResponse> => {
-      return this.notSupported('transfers.toPhone')
+    toPhone: (req: TransferToPhoneRequest): Promise<TransferResponse> => {
+      const { toPhone } = require('./transfers')
+      return toPhone(req, this.config, this.auth, this.http)
     },
   }
 
@@ -60,6 +61,6 @@ export class DarajaProvider extends BaseProvider {
   }
 
   async balances(req?: BalanceRequest): Promise<BalanceResponse> {
-    return balances(req || {}, this.config, this.auth, this.http)
+    return balances(req || {}, this.config, this.auth, this.http, this.emitter)
   }
 }

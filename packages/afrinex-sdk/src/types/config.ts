@@ -5,6 +5,9 @@ export interface DarajaConfig {
   consumerSecret: string
   shortcode: string
   passkey: string
+  initiatorName?: string
+  initiatorPassword?: string
+  certPath?: string
 }
 
 export interface BuniConfig {

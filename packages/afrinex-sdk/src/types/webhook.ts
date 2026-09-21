@@ -1,4 +1,4 @@
-export type WebhookEvent = 'payment.success' | 'payment.failed' | 'payment.pending'
+export type WebhookEvent = 'payment.success' | 'payment.failed' | 'payment.pending' | 'balance.success' | 'balance.failed'
 
 export interface UnifiedWebhookPayload {
   provider: string

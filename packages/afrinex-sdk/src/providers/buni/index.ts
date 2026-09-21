@@ -61,6 +61,6 @@ export class BuniProvider extends BaseProvider {
   }
 
   async balances(req?: BalanceRequest): Promise<BalanceResponse> {
-    return balances(req || {}, this.config, this.auth, this.http)
+    return balances(req || {}, this.config, this.auth, this.http, this.emitter)
   }
 }

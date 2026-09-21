@@ -32,4 +32,7 @@ export interface IProvider {
     query(request: PaymentQueryRequest): Promise<PaymentQueryResponse>;
   };
   balances(request?: BalanceRequest): Promise<BalanceResponse>;
+  webhooks: {
+    parse(payload: unknown): import('./webhook').UnifiedWebhookPayload;
+  };
 }
