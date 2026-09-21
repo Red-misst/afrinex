@@ -23,7 +23,7 @@ export async function query(
 
   const response = await http.post<BuniQueryRawResponse>(
     BUNI_PATHS.query,
-    { TransID: req.transactionId },
+    { payload: { requestId: req.transactionId } },
     headers,
   )
 

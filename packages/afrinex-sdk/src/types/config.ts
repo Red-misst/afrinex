@@ -14,6 +14,8 @@ export interface BuniConfig {
   consumerKey: string
   consumerSecret: string
   orgShortCode: string
+  companyCode?: string
+  debitAccountNumber?: string
 }
 
 export interface AfrinexConfig {

@@ -6,6 +6,9 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 
+> ⭐️ **Love Afrinex? Please consider giving it a star on GitHub!** ⭐️
+> It helps the project grow, reach more developers in the ecosystem, and keeps the open-source maintenance going.
+
 ---
 
 ## 📖 The Idea Behind Afrinex
@@ -16,9 +19,9 @@ Integrating multiple payment gateways in Kenya is historically a fragmented, pai
 - **Webhooks**: Parsing a successful payment from Daraja is a nested nightmare compared to Buni's flatter structure.
 - **Error Handling**: Each returns errors in a proprietary format.
 
-**Afrinex** was built to solve this fragmentation. The core philosophy is **Unification through Abstraction**. Afrinex provides a single, consistent `IProvider` interface that all payment gateways must implement. This means:
-- You learn one API (`stkPush`, `payments.query`, `webhooks.parse`).
-- You handle one standard set of strongly-typed errors.
+**Afrinex** was built to solve this fragmentation. The core philosophy is **Unification through Abstraction**. Afrinex provides a single, consistent interface that all payment gateways must implement. This means:
+- You learn one API (`stkPush`, `payments.query`, `transfers.toPhone`).
+- You handle one standard set of strongly-typed webhook payloads via `handleWebhook`.
 - You can dynamically load only the providers you need (reducing bundle size and mental overhead).
 
 ---
@@ -27,9 +30,9 @@ Integrating multiple payment gateways in Kenya is historically a fragmented, pai
 
 Afrinex is built around a flexible, plugin-like architecture:
 
-1. **`AfrinexClient`**: The central orchestrator. It holds a registry of your instantiated providers and manages global configuration (like your `callbackUrl` and `env`).
-2. **Providers (`DarajaProvider`, `BuniProvider`)**: Independent classes that implement the `IProvider` interface. They handle the underlying HTTP requests, token caching (using an in-memory mutex to prevent race conditions during token refresh), and payload normalization.
-3. **Unified DTOs (Data Transfer Objects)**: Standardized request and response objects. When you call `stkPush`, you pass a generic `StkPushRequest` object. The provider translates this into the specific payload expected by Daraja or Buni.
+1. **`AfrinexClient`**: The central orchestrator created via `createClient`. It holds a registry of your instantiated providers, manages global configuration (like your `callbackUrl` and `env`), routes webhooks, and manages an internal event emitter.
+2. **Providers (`DarajaProvider`, `BuniProvider`)**: Independent classes that implement the underlying provider interfaces. They handle the underlying HTTP requests, token caching, and payload normalization.
+3. **Unified DTOs (Data Transfer Objects)**: Standardized request and response objects. When you call `stkPush`, you pass a generic request object. The provider translates this into the specific payload expected by Daraja or Buni.
 
 ---
 
@@ -48,26 +51,8 @@ pnpm add afrinex
 ### 2. Procure Credentials
 
 You need API credentials from the respective developer portals:
-- **Daraja (Safaricom M-Pesa)**: Create an app at [developer.safaricom.co.ke](https://developer.safaricom.co.ke/). You will need a `Consumer Key` and `Consumer Secret`.
-- **Buni (KCB Bank)**: Create an app at [buni.kcbgroup.com](https://buni.kcbgroup.com/). You will need a `Consumer Key` and `Consumer Secret`.
-
-Setup your environment variables (e.g., in a `.env` file):
-
-```env
-# Daraja
-AFRINEX_DARAJA_CONSUMER_KEY=your_key
-AFRINEX_DARAJA_CONSUMER_SECRET=your_secret
-AFRINEX_DARAJA_SHORTCODE=174379
-AFRINEX_DARAJA_PASSKEY=bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919
-
-# Buni
-AFRINEX_BUNI_CONSUMER_KEY=your_key
-AFRINEX_BUNI_CONSUMER_SECRET=your_secret
-AFRINEX_BUNI_ORG_SHORT_CODE=522522
-
-# Global
-AFRINEX_CALLBACK_URL=https://api.yourdomain.com/webhooks
-```
+- **Daraja (Safaricom M-Pesa)**: Create an app at [developer.safaricom.co.ke](https://developer.safaricom.co.ke/). You will need a `Consumer Key`, `Consumer Secret`, `Shortcode`, `Passkey`, `Initiator Name`, and `Initiator Password`.
+- **Buni (KCB Bank)**: Create an app at [buni.kcbgroup.com](https://buni.kcbgroup.com/). You will need a `Consumer Key`, `Consumer Secret`, and `Org Short Code`.
 
 ### 3. Initialization
 
@@ -84,7 +69,10 @@ const daraja = new DarajaProvider({
   consumerKey: process.env.AFRINEX_DARAJA_CONSUMER_KEY!,
   consumerSecret: process.env.AFRINEX_DARAJA_CONSUMER_SECRET!,
   shortcode: process.env.AFRINEX_DARAJA_SHORTCODE!,
-  passkey: process.env.AFRINEX_DARAJA_PASSKEY!
+  passkey: process.env.AFRINEX_DARAJA_PASSKEY!,
+  initiatorName: process.env.AFRINEX_DARAJA_INITIATOR_NAME!,
+  initiatorPassword: process.env.AFRINEX_DARAJA_INITIATOR_PASSWORD!,
+  // certPath: 'path/to/cert.cer' // Required for Daraja B2C/Balances in production
 }, env);
 
 const buni = new BuniProvider({
@@ -94,9 +82,9 @@ const buni = new BuniProvider({
 }, env);
 
 // 2. Create the Client
-const afrinex = createClient({
+const pay = createClient({
   env,
-  callbackUrl: process.env.AFRINEX_CALLBACK_URL,
+  callbackUrl: process.env.AFRINEX_CALLBACK_URL || 'https://api.yourdomain.com/webhooks',
   providers: {
     daraja,
     buni
@@ -106,53 +94,74 @@ const afrinex = createClient({
 
 ### 4. Executing Transactions
 
-To trigger an M-Pesa STK Push (C2B Express Checkout), grab the provider from the client and call `stkPush`.
+With the `pay` client initialized, you can retrieve a provider by name and execute standard commands seamlessly.
 
+#### STK Push (C2B Express Checkout)
 ```typescript
-async function chargeCustomer() {
-  const provider = afrinex.getProvider('daraja'); // or 'buni'
-  
-  try {
-    const result = await provider.stkPush({
-      phone: '0712345678',       // Formats accepted: 07XX, 2547XX, +2547XX
-      amount: 1,                 // Amount in KES
-      reference: 'INV-001',      // Your internal reference
-      description: 'Payment'     // Optional description
-    });
-    
-    console.log('Transaction Initiated:', result.transactionId);
-  } catch (error) {
-    console.error('Failed to initiate transaction:', error);
-  }
-}
+// For Daraja (M-Pesa)
+const darajaRes = await pay.getProvider('daraja').stkPush({
+  phone: '254708374149',
+  amount: 1,
+  reference: `INV-DARAJA-${Date.now()}`,
+  description: 'Payment for services'
+});
+console.log('Daraja Checkout ID:', darajaRes.transactionId);
+
+// For Buni (KCB)
+const buniRes = await pay.getProvider('buni').stkPush({
+  phone: '254722000000',
+  amount: 1,
+  reference: `INV-BUNI-${Date.now()}`,
+  description: 'Payment for services'
+});
+console.log('Buni Checkout ID:', buniRes.transactionId);
 ```
 
-### 5. Handling Webhooks
+#### B2C Transfers (Sending money to a phone)
+```typescript
+const transferRes = await pay.getProvider('buni').transfers.toPhone({
+  phone: '254722000000',
+  amount: 100,
+  reference: `B2C-${Date.now()}`,
+  remarks: 'Salary Payment'
+});
+```
 
-Both Daraja and Buni will send HTTP POST requests to your `callbackUrl` asynchronously. Afrinex provides a `.webhooks.parse()` method that normalizes the incoming JSON into a standard `AfrinexWebhookEvent`.
+#### Querying Transaction Status
+```typescript
+const queryRes = await pay.getProvider('buni').payments.query({
+  transactionId: buniRes.transactionId
+});
+console.log('Payment Status:', queryRes.status);
+```
+
+### 5. Handling Webhooks & Event Emitters
+
+Both Daraja and Buni send asynchronous HTTP POST callbacks to your `callbackUrl`. Afrinex simplifies this by exposing a single `handleWebhook` method on the client that parses the incoming payload into a standard `UnifiedWebhookPayload`.
 
 ```typescript
 // Example using Express.js
-app.post('/webhooks/:providerName', (req, res) => {
-  const { providerName } = req.params;
-  const provider = afrinex.getProvider(providerName);
+app.post('/webhooks/:provider', (req, res) => {
+  const providerName = req.params.provider as 'daraja' | 'buni';
   
   try {
-    // This handles both Daraja's complex nesting and Buni's format!
-    const event = provider.webhooks.parse(req.body);
+    // Automatically parse Daraja/Buni specific payloads into a unified format
+    const event = pay.handleWebhook(providerName, req.body);
     
     if (event.event === 'payment.success') {
       console.log(`Received ${event.amount} from ${event.phone}`);
-      console.log(`Provider reference: ${event.providerReference}`); // E.g., the M-Pesa receipt number
-      
-      // Update your database here...
+      console.log(`Transaction ID: ${event.transactionId}`);
+      // Mark invoice as paid in your DB...
     } else {
-      console.log('Payment failed or cancelled.');
+      console.log(`Payment failed: ${event.transactionId}`);
     }
+
+    // You can optionally emit internal events to resolve pending promises (like balances)
+    pay.events.emit(`${event.event}:${providerName}`, event);
     
     res.sendStatus(200);
   } catch (error) {
-    console.error('Webhook parsing failed:', error);
+    console.error('Webhook processing failed:', error);
     res.sendStatus(400);
   }
 });
@@ -160,38 +169,47 @@ app.post('/webhooks/:providerName', (req, res) => {
 
 ---
 
-## 📚 Comprehensive API Reference
+## 🚧 Sandbox Limitations & Troubleshooting
 
-### `IProvider` Interface
-All providers guarantee these methods:
+When developing in the Daraja and Buni Sandbox environments, you will inevitably encounter intentional limitations that do not apply to production. Here are the most common sandbox errors and how to resolve them:
 
-- `stkPush(request: StkPushRequest): Promise<StkPushResponse>`
-  Initiates a mobile money prompt on the user's phone.
-- `payments.query(request: PaymentQueryRequest): Promise<PaymentQueryResponse>`
-  Checks the status of an initiated STK push.
-- `transfers.toPhone(request: TransferToPhoneRequest): Promise<TransferResponse>`
-  Sends money from your paybill to a user's phone (B2C). *Note: May throw `ProviderCapabilityError` if the provider doesn't support it.*
-- `webhooks.parse(payload: any): AfrinexWebhookEvent`
-  Normalizes a raw webhook JSON payload.
+### Buni: `Account not whitelisted for FT API` (Code 406 / 900908)
+When calling `transfers.toPhone()` in the Buni Sandbox, you might receive an error stating `Validation failed: Account not whitelisted for FT API` or an `Invalid Amount / Not Found` error.
+- **Why this happens:** The Buni Sandbox strictly governs access to the Funds Transfer (FT/B2C) API. By default, newly created sandbox apps are not whitelisted to execute transfers.
+- **The Fix:** You must email KCB Support at **buni@kcbgroup.com**. Provide your Buni Developer Username and App Name, and explicitly request to be "whitelisted for the FT API in the sandbox environment."
 
-### Error Handling
+### Buni: `Internal Server Error` (Status 500) on Payments Query
+When querying STK transactions using `payments.query()`, the Buni Sandbox Vending Gateway may successfully accept the payload format but ultimately crash downstream with a `500 Internal Server Error`.
+- **Why this happens:** This is a known instability/limitation in the KCB Buni sandbox environment when checking the status of mock STK push transactions. Afrinex formats the payload correctly (`{ payload: { requestId: ... } }`), but the backend sandbox database occasionally fails to resolve it.
+
+### Daraja: `Bad Request - Invalid Initiator` (Code 400.002.02)
+When calling `balances()` or B2C endpoints in the Daraja Sandbox, you might see this error.
+- **Why this happens:** You are either missing the Daraja security certificate (`cert.cer`), or the sandbox `Initiator Name` and `Initiator Password` provided do not match the sandbox defaults. Ensure you have properly generated the security credentials using the official Daraja sandbox public certificate.
+
+### Daraja: Spike Arrest / Too Many Requests (Code 500.001.1001 / 429)
+When aggressively testing Daraja APIs (especially `payments.query()`), the sandbox API Gateway will block you with a Spike Arrest error.
+- **Why this happens:** The Daraja Sandbox limits the number of requests per second per IP/Account to simulate rate limiting.
+- **The Fix:** Implement delays/retries in your testing script, or simply wait a few seconds between requests.
+
+---
+
+## 📚 Error Handling
+
 Afrinex exports custom Error classes for precise error handling:
 - `AfrinexError`: Base class for all SDK errors.
 - `ConfigurationError`: Thrown during initialization if credentials are missing or invalid.
 - `AuthError`: Thrown if token generation fails (e.g., invalid consumer key).
-- `ProviderError`: Thrown if the upstream provider rejects the request (e.g., invalid phone number).
-- `ProviderCapabilityError`: Thrown if you call a method not supported by the provider (e.g., calling `transfers.toPhone` on a provider that only supports C2B).
+- `ProviderError`: Thrown if the upstream provider rejects the request. It includes the original `providerCode` and `providerMessage`.
 
 ```typescript
-import { ProviderError, AuthError } from 'afrinex';
+import { ProviderError } from 'afrinex';
 
 try {
-  // ... call provider
+  await pay.getProvider('buni').transfers.toPhone({ ... });
 } catch (error) {
   if (error instanceof ProviderError) {
-    console.error(`Upstream rejected: ${error.message} (Code: ${error.code})`);
-  } else if (error instanceof AuthError) {
-    console.error('Check your API keys!');
+    console.error(`Upstream rejected: ${error.providerMessage} (Code: ${error.providerCode})`);
+    console.error('Raw response:', error.raw);
   }
 }
 ```
@@ -200,73 +218,23 @@ try {
 
 ## 🛠️ Guide for Contributors & Forking
 
-Want to fork Afrinex to add a new bank, mobile money provider (like Airtel Money), or customize the internal logic? Here is everything you need to know.
+Want to fork Afrinex to add a new provider?
 
 ### Project Structure
-```
+```text
 packages/afrinex-sdk/
 ├── src/
-│   ├── core/         # The AfrinexClient and BaseProvider abstract class
+│   ├── core/         # The AfrinexClient, EventEmitter, TokenManager, and HttpClient
 │   ├── errors/       # Custom error classes
-│   ├── providers/    # Individual provider implementations (daraja.ts, buni.ts)
+│   ├── providers/    # Individual provider implementations (daraja, buni)
 │   ├── types/        # TypeScript interfaces and unified DTOs
 │   └── index.ts      # Main export barrel
-├── tests/
-│   ├── unit/         # Vitest unit tests (mocked HTTP)
-│   └── integration/  # Vitest integration tests (real Sandbox HTTP calls)
-```
-
-### How to Add a New Provider
-
-If you are forking to add a new provider (e.g., `AirtelProvider`):
-
-1. **Create the file**: Create `src/providers/airtel.ts`.
-2. **Extend the Base**: Your class should extend the abstract `BaseProvider` class. `BaseProvider` handles the token caching and mutex locking for you.
-3. **Implement Abstract Methods**: 
-   - `protected abstract generateToken(): Promise<string>`
-   - `stkPush(request: StkPushRequest): Promise<StkPushResponse>`
-   - `webhooks.parse(payload: any): AfrinexWebhookEvent`
-   - ...and others from `IProvider`.
-4. **Use Unified Types**: Map the incoming generic `StkPushRequest` to Airtel's specific JSON structure. Map Airtel's response back to the generic `StkPushResponse`.
-5. **Export it**: Add it to `src/index.ts`.
-
-Example skeleton:
-```typescript
-import { BaseProvider } from '../core/base-provider';
-import { IProvider, StkPushRequest, StkPushResponse } from '../types';
-
-export class AirtelProvider extends BaseProvider implements IProvider {
-  constructor(config: AirtelConfig, env: 'sandbox' | 'production') {
-    super(env, 'https://sandbox.airtel.com', 'https://api.airtel.com');
-  }
-
-  protected async generateToken(): Promise<string> {
-    // Implement Airtel's OAuth flow
-    // Return the bare token string
-  }
-
-  async stkPush(request: StkPushRequest): Promise<StkPushResponse> {
-    const token = await this.getToken(); // Automatically handles caching!
-    
-    // Map request to Airtel format
-    // Make Axios request with token
-    // Map response to StkPushResponse
-  }
-  
-  // ... implement other methods
-}
+├── tests/            # Test suite
 ```
 
 ### Development Scripts
-
-- `npm run build`: Compiles TS using `tsup` into ESM and CJS formats in the `dist/` folder.
-- `npm run test`: Runs the Vitest test suite.
-- `npm run lint`: Runs `tsc` to check for type errors.
-
-### Testing Strategy
-We use `vitest`.
-- **Unit Tests (`tests/unit`)**: Use mocking (e.g., mocking `axios`) to test internal logic, error handling, and webhook parsing without hitting network.
-- **Integration Tests (`tests/integration`)**: These hit the actual sandbox APIs. You must have a `.env` file populated with sandbox keys to run these successfully.
+- `yarn build`: Compiles TS using `tsup` into ESM and CJS formats in the `dist/` folder.
+- `yarn test` (in test-app): Runs the integration tests.
 
 ---
 

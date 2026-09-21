@@ -1,51 +1,86 @@
 import { normalizePhone } from '../../core/phone'
 import type { UnifiedWebhookPayload } from '../../types/webhook'
 
-interface BuniC2BPayload {
-  TransactionType: string
-  TransID: string
-  TransAmount: number | string
-  MSISDN: string
-  BillRefNumber: string
-  TransTime?: string
+interface BuniTillPayload {
+  requestPayload?: {
+    additionalData?: {
+      notificationData?: {
+        transactionID?: string
+        transactionAmt?: string
+        debitMSISDN?: string
+        businessKey?: string
+        transactionDate?: string
+      }
+    }
+  }
+}
+
+interface BuniAccountPayload {
+  transactionReference?: string
+  transactionAmount?: string
+  customerMobileNumber?: string
+  timestamp?: string
+  customerReference?: string
 }
 
 /**
- * Parses a raw Buni C2B callback payload into a UnifiedWebhookPayload.
+ * Parses a raw Buni callback payload into a UnifiedWebhookPayload.
+ * Handles both Till Instant Payment Notifications and Account Instant Payment Notifications.
  *
  * Buni only sends callbacks for successful payments — it does not call back
  * on failed transactions, so this always maps to payment.success.
- *
- * TransactionType === 'Pay Bill' → payment.success
  */
 export function parse(payload: unknown): UnifiedWebhookPayload {
-  const raw = payload as BuniC2BPayload
+  const rawTill = payload as BuniTillPayload
+  const rawAcc = payload as BuniAccountPayload
+
+  const notification = rawTill?.requestPayload?.additionalData?.notificationData
+
+  // Extract fields depending on payload type (Till vs Account notification)
+  const transactionId = notification?.transactionID ?? rawAcc.transactionReference ?? ''
+  const amountStr = notification?.transactionAmt ?? rawAcc.transactionAmount ?? '0'
+  const rawPhone = notification?.debitMSISDN ?? rawAcc.customerMobileNumber ?? ''
+  const reference = notification?.businessKey ?? rawAcc.customerReference ?? ''
+  const rawTime = notification?.transactionDate ?? rawAcc.timestamp
 
   let phone = ''
   try {
-    phone = raw.MSISDN ? normalizePhone(raw.MSISDN) : ''
+    phone = rawPhone ? normalizePhone(rawPhone) : ''
   } catch {
-    phone = raw.MSISDN ?? ''
+    phone = rawPhone
   }
 
   const completedAt = (() => {
-    if (raw.TransTime === undefined) return new Date().toISOString()
-    const s = raw.TransTime
-    // Buni returns TransTime as YYYYMMDDHHmmss (e.g. 20240115103000)
-    if (s.length === 14 && /^\d{14}$/.test(s)) {
-      const iso = `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}T${s.slice(8, 10)}:${s.slice(10, 12)}:${s.slice(12, 14)}Z`
+    if (!rawTime) return new Date().toISOString()
+    
+    // Check if it's the YYYYMMDDHHmm format used in account notifications (e.g. 202111110305)
+    if (/^\d{12}$/.test(rawTime)) {
+      const iso = `${rawTime.slice(0, 4)}-${rawTime.slice(4, 6)}-${rawTime.slice(6, 8)}T${rawTime.slice(8, 10)}:${rawTime.slice(10, 12)}:00Z`
       return new Date(iso).toISOString()
     }
-    return new Date(s).toISOString()
+    
+    // Check if it's the YYYYMMDDHHmmss format (e.g. 20240115103000)
+    if (/^\d{14}$/.test(rawTime)) {
+      const iso = `${rawTime.slice(0, 4)}-${rawTime.slice(4, 6)}-${rawTime.slice(6, 8)}T${rawTime.slice(8, 10)}:${rawTime.slice(10, 12)}:${rawTime.slice(12, 14)}Z`
+      return new Date(iso).toISOString()
+    }
+
+    // Otherwise, assume it's a standard format like 'Mon May 19 13:30:54 EAT 2025' and let Date parse it
+    try {
+      const d = new Date(rawTime.replace('EAT', 'GMT+0300'))
+      if (!isNaN(d.getTime())) return d.toISOString()
+    } catch {}
+
+    return new Date().toISOString()
   })()
 
   return {
     provider: 'buni',
     event: 'payment.success',
-    transactionId: raw.TransID,
-    amount: Number(raw.TransAmount),
+    transactionId,
+    amount: Number(amountStr),
     phone,
-    reference: raw.BillRefNumber,
+    reference,
     completedAt,
     raw: payload,
   }

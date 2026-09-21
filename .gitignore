@@ -7,4 +7,3 @@ dist/
 .turbo/
 coverage/
 *.tsbuildinfo
-examples/
