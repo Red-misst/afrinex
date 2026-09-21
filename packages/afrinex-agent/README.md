@@ -5,6 +5,8 @@
 [![npm version](https://img.shields.io/npm/v/@afrinex/agent)](https://www.npmjs.com/package/@afrinex/agent)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+> ⭐️ **If you find this project helpful, please consider leaving a star on [GitHub](https://github.com/Red-misst/afrinex)! It helps others discover the project.**
+
 ---
 
 ## 📖 The Idea Behind The Agent
